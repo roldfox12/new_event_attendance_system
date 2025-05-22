@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        /* Modern font stack and gradient background */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #a21caf 0%, #cd2dd3 100%); /* Matches previous pages */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Sleek container with subtle animation */
+        .container {
+            background-color: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px; /* Matches event page for consistency */
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Hover effect for container */
+        .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Polished heading with underline animation */
+        h2 {
+            color: #1a1a1a;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background-color: #a21caf;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        h2:hover::after {
+            width: 80px;
+        }
+
+        /* Enhanced message styling with fade-in */
+        .message {
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+            border-left: 4px solid;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .success {
+            background-color: #e6f4ea;
+            color: #1a4731;
+            border-left-color: #28a745;
+        }
+
+        .error {
+            background-color: #fdeded;
+            color: #5c1c24;
+            border-left-color: #dc3545;
+        }
+
+        /* Improved label styling */
+        label {
+            display: block;
+            margin: 12px 0 6px;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Fancy input and select fields with focus effects */
+        select,
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
+            background-color: #f8fafc;
+        }
+
+        select::placeholder,
+        input[type="text"]::placeholder {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        select:focus,
+        input[type="text"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #a21caf;
+            box-shadow: 0 0 0 3px rgba(162, 28, 175, 0.1);
+            background-color: #ffffff;
+        }
+
+        /* Inline error messages for form fields */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin: -10px 0 10px 0;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        /* Stylish register button */
+        button {
+            background: linear-gradient(90deg, #a21caf, #cd2dd3); /* Gradient button */
+            color: #ffffff;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Fancy button hover effect with glow and shine */
+        button:hover {
+            background: linear-gradient(90deg, #8e1a9b, #b526bc);
+            transform: scale(1.02);
+            box-shadow: 0 2px 10px rgba(162, 28, 175, 0.3);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transition: left 0.5s ease;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        /* Enhanced link styling */
+        a {
+            color: #a21caf;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #8e1a9b;
+            text-decoration: underline;
+        }
+
+        /* Improved links section */
+        .links {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Student Registration</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="{{ form.college.id_for_label }}">College</label>
+            {{ form.college }}
+            {% if form.college.errors %}
+                <p class="error-message">{{ form.college.errors }}</p>
+            {% endif %}
+            
+            <label for="{{ form.id_number.id_for_label }}">ID Number</label>
+            {{ form.id_number }}
+            {% if form.id_number.errors %}
+                <p class="error-message">{{ form.id_number.errors }}</p>
+            {% endif %}
+            
+            <label for="{{ form.name.id_for_label }}">Full Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <p class="error-message">{{ form.name.errors }}</p>
+            {% endif %}
+            
+            <label for="{{ form.course.id_for_label }}">Course</label>
+            {{ form.course }}
+            {% if form.course.errors %}
+                <p class="error-message">{{ form.course.errors }}</p>
+            {% endif %}
+            
+            <label for="{{ form.school_year.id_for_label }}">School Year</label>
+            {{ form.school_year }}
+            {% if form.school_year.errors %}
+                <p class="error-message">{{ form.school_year.errors }}</p>
+            {% endif %}
+            
+            <label for="{{ form.picture.id_for_label }}">Profile Picture</label>
+            {{ form.picture }}
+            {% if form.picture.errors %}
+                <p class="error-message">{{ form.picture.errors }}</p>
+            {% endif %}
+            
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="links">
+            <a href="{% url 'attendance_form' %}">Back to Attendance</a>
+        </div>
+    </div>
+</body>
+</html>
