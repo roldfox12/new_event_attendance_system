@@ -6,5 +6,4 @@ urlpatterns = [
     path('logout/', views.sbo_logout, name='sbo_logout'),
     path('attendance/', views.attendance_form, name='attendance_form'),
     path('register/', views.student_registration, name='student_registration'),
-    path('print_receipt/', views.print_receipt, name='print_receipt'),
 ]

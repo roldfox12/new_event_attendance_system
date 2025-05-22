@@ -17,6 +17,15 @@ class StudentRegistrationForm(forms.ModelForm):
 class AttendanceForm(forms.Form):
     event = forms.ModelChoiceField(queryset=Event.objects.all(), label="Select Event")
     id_number = forms.CharField(max_length=50, label="Student ID Number")
+    action = forms.ChoiceField(
+        choices=[
+            ('am_sign_in', 'AM Sign In'),
+            ('am_sign_out', 'AM Sign Out'),
+            ('pm_sign_in', 'PM Sign In'),
+            ('pm_sign_out', 'PM Sign Out'),
+        ],
+        label="Action"
+    )
 
     def __init__(self, *args, **kwargs):
         event_queryset = kwargs.pop('event_queryset', None)

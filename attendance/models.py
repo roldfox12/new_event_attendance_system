@@ -36,8 +36,12 @@ class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='attendances')
     sign_in_time = models.DateTimeField(null=True, blank=True)
     sign_out_time = models.DateTimeField(null=True, blank=True)
+    am_sign_in_time = models.DateTimeField(null=True, blank=True)
+    am_sign_out_time = models.DateTimeField(null=True, blank=True)
+    pm_sign_in_time = models.DateTimeField(null=True, blank=True)
+    pm_sign_out_time = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     def __str__(self):
         return f"{self.student.name} - {self.event.name}"
 
