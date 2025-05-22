@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 class College(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -13,8 +13,8 @@ class Student(models.Model):
     college = models.ForeignKey(College, on_delete=models.CASCADE, related_name='students')
     id_number = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
-    course = models.CharField(max_length=100)
-    school_year = models.CharField(max_length=20)
+    course = models.CharField(max_length=100, blank=True)
+    school_year = models.CharField(max_length=20, blank=True)
     picture = models.ImageField(upload_to='student_pics/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -34,8 +34,6 @@ class Event(models.Model):
 class Attendance(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='attendances')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='attendances')
-    sign_in_time = models.DateTimeField(null=True, blank=True)
-    sign_out_time = models.DateTimeField(null=True, blank=True)
     am_sign_in_time = models.DateTimeField(null=True, blank=True)
     am_sign_out_time = models.DateTimeField(null=True, blank=True)
     pm_sign_in_time = models.DateTimeField(null=True, blank=True)
@@ -77,20 +75,11 @@ class SBOOfficerManager(BaseUserManager):
             password=password,
         )
         user.is_admin = True
+        user.is_superuser = True  # Add is_superuser for PermissionsMixin
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, college, password=None):
-        user = self.create_user(
-            username=username,
-            college=college,
-            password=password,
-        )
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
-
-class SBOOfficer(AbstractBaseUser):
+class SBOOfficer(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
     college = models.ForeignKey(College, on_delete=models.CASCADE, related_name='sbo_officers')
     is_active = models.BooleanField(default=True)
@@ -105,10 +94,10 @@ class SBOOfficer(AbstractBaseUser):
         return f"{self.username} ({self.college.name})"
 
     def has_perm(self, perm, obj=None):
-        return True
+        return self.is_admin
 
     def has_module_perms(self, app_label):
-        return True
+        return self.is_admin
 
     @property
     def is_staff(self):

@@ -54,6 +54,7 @@
             width: 100%;
             max-width: 700px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; /* For positioning the print button */
         }
 
         .log-container:hover {
@@ -88,17 +89,17 @@
             text-overflow: ellipsis;
         }
 
-        /* Column widths */
+        /* Adjusted column widths */
         .attendance-table th:nth-child(1),
-        .attendance-table td:nth-child(1) { width: 200px; } /* Name */
+        .attendance-table td:nth-child(1) { width: 250px; } /* Name + Event (increased to fit event name) */
         .attendance-table th:nth-child(2),
-        .attendance-table td:nth-child(2) { width: 100px; } /* AM Sign In */
+        .attendance-table td:nth-child(2) { width: 90px; } /* AM Sign In (slightly reduced) */
         .attendance-table th:nth-child(3),
-        .attendance-table td:nth-child(3) { width: 100px; } /* AM Sign Out */
+        .attendance-table td:nth-child(3) { width: 90px; } /* AM Sign Out (slightly reduced) */
         .attendance-table th:nth-child(4),
-        .attendance-table td:nth-child(4) { width: 100px; } /* PM Sign In */
+        .attendance-table td:nth-child(4) { width: 90px; } /* PM Sign In (slightly reduced) */
         .attendance-table th:nth-child(5),
-        .attendance-table td:nth-child(5) { width: 100px; } /* PM Sign Out */
+        .attendance-table td:nth-child(5) { width: 90px; } /* PM Sign Out (slightly reduced) */
 
         .attendance-table th {
             background: linear-gradient(135deg, #a21caf 0%, #cd2dd3 100%);
@@ -136,6 +137,14 @@
 
         .attendance-table td {
             color: #1a1a1a;
+        }
+
+        /* Event name styling */
+        .event-name {
+            color: #a21caf;
+            font-weight: 500;
+            font-size: 0.7rem;
+            margin-left: 8px;
         }
 
         /* Custom scrollbar */
@@ -179,17 +188,18 @@
 
         /* Print button */
         .print-button {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 4px 8px; /* Reduced padding for smaller size */
+            font-size: 0.7rem; /* Smaller font size */
             font-weight: 500;
             cursor: pointer;
             background-color: #a21caf;
             color: #ffffff;
+            border: none;
+            border-radius: 4px; /* Slightly reduced for a more rectangular look */
             transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-bottom: 16px;
-            display: inline-block;
         }
 
         .print-button:hover {
@@ -388,8 +398,8 @@
             }
 
             .print-button {
-                font-size: 0.85rem;
-                padding: 8px 12px;
+                font-size: 0.65rem;
+                padding: 3px 6px;
             }
         }
 
@@ -413,8 +423,8 @@
             }
 
             .print-button {
-                font-size: 0.8rem;
-                padding: 6px 10px;
+                font-size: 0.6rem;
+                padding: 2px 5px;
             }
         }
     </style>
@@ -471,7 +481,10 @@
                     <tbody>
                         {% for log in attendance_logs %}
                             <tr>
-                                <td>{{ log.student.name }}</td>
+                                <td>
+                                    {{ log.student.name }}
+                                    <span class="event-name">({{ log.event.name }})</span>
+                                </td>
                                 <td>{{ log.am_sign_in_time|date:"Y-m-d H:i"|default:"-" }}</td>
                                 <td>{{ log.am_sign_out_time|date:"Y-m-d H:i"|default:"-" }}</td>
                                 <td>{{ log.pm_sign_in_time|date:"Y-m-d H:i"|default:"-" }}</td>

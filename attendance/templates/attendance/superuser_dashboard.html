@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superuser Dashboard</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #a21caf 0%, #cd2dd3 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .dashboard-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 1200px;
+            padding: 32px;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-container:hover {
+            transform: translateY(-4px);
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #a21caf;
+            margin: 8px auto;
+            border-radius: 2px;
+        }
+
+        /* Tab navigation */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: #e5e7eb;
+            color: #1a1a1a;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .tab-button.active, .tab-button:hover {
+            background: #a21caf;
+            color: #ffffff;
+            transform: scale(1.02);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Table styling */
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.75rem;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        th {
+            background: linear-gradient(135deg, #a21caf 0%, #cd2dd3 100%);
+            color: #ffffff;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+
+        th:first-child { border-top-left-radius: 8px; }
+        th:last-child { border-top-right-radius: 8px; }
+
+        tr:nth-child(even) {
+            background: linear-gradient(135deg, #f9f5ff 0%, #f3eaff 100%);
+        }
+
+        tr:hover {
+            background: linear-gradient(135deg, #ede9fe 0%, #e0d7ff 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Column widths */
+        .event-table th:nth-child(1), .event-table td:nth-child(1) { width: 200px; } /* Name */
+        .event-table th:nth-child(2), .event-table td:nth-child(2) { width: 150px; } /* College */
+        .event-table th:nth-child(3), .event-table td:nth-child(3) { width: 100px; } /* Date */
+        .event-table th:nth-child(4), .event-table td:nth-child(4) { width: 150px; } /* Actions */
+
+        .officer-table th:nth-child(1), .officer-table td:nth-child(1) { width: 150px; } /* Username */
+        .officer-table th:nth-child(2), .officer-table td:nth-child(2) { width: 150px; } /* College */
+        .officer-table th:nth-child(3), .officer-table td:nth-child(3) { width: 150px; } /* Actions */
+
+        .student-table th:nth-child(1), .student-table td:nth-child(1) { width: 150px; } /* Name */
+        .student-table th:nth-child(2), .student-table td:nth-child(2) { width: 100px; } /* ID Number */
+        .student-table th:nth-child(3), .student-table td:nth-child(3) { width: 150px; } /* College */
+        .student-table th:nth-child(4), .student-table td:nth-child(4) { width: 100px; } /* Course */
+        .student-table th:nth-child(5), .student-table td:nth-child(5) { width: 100px; } /* School Year */
+        .student-table th:nth-child(6), .student-table td:nth-child(6) { width: 100px; } /* Picture */
+        .student-table th:nth-child(7), .student-table td:nth-child(7) { width: 150px; } /* Actions */
+
+        .attendance-table th:nth-child(1), .attendance-table td:nth-child(1) { width: 150px; } /* Student */
+        .attendance-table th:nth-child(2), .attendance-table td:nth-child(2) { width: 150px; } /* Event */
+        .attendance-table th:nth-child(3), .attendance-table td:nth-child(3) { width: 100px; } /* AM Sign In */
+        .attendance-table th:nth-child(4), .attendance-table td:nth-child(4) { width: 100px; } /* AM Sign Out */
+        .attendance-table th:nth-child(5), .attendance-table td:nth-child(5) { width: 100px; } /* PM Sign In */
+        .attendance-table th:nth-child(6), .attendance-table td:nth-child(6) { width: 100px; } /* PM Sign Out */
+
+        /* Custom scrollbar */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #a21caf;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #8e1a9b;
+        }
+
+        /* Buttons */
+        .action-button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            margin-right: 4px;
+        }
+
+        .edit-button {
+            background: #a21caf;
+            color: #ffffff;
+        }
+
+        .edit-button:hover {
+            background: #8e1a9b;
+            transform: scale(1.05);
+        }
+
+        .delete-button {
+            background: #dc3545;
+            color: #ffffff;
+        }
+
+        .delete-button:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .add-button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: #a21caf;
+            color: #ffffff;
+            margin-bottom: 16px;
+            display: inline-block;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .add-button:hover {
+            background: #8e1a9b;
+            transform: scale(1.02);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .modal-content form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-content label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .modal-content input:focus,
+        .modal-content select:focus,
+        .modal-content textarea:focus {
+            outline: none;
+            border-color: #a21caf;
+            box-shadow: 0 0 0 3px rgba(162, 28, 175, 0.1);
+        }
+
+        .modal-content button {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            background: #a21caf;
+            color: #ffffff;
+        }
+
+        .modal-content button:hover {
+            background: #8e1a9b;
+        }
+
+        .close-button {
+            background: #6b7280;
+            margin-top: 8px;
+        }
+
+        .close-button:hover {
+            background: #4b5563;
+        }
+
+        /* Message styling */
+        .message {
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .success {
+            background: #e6f4ea;
+            color: #1a4731;
+            border-left: 4px solid #28a745;
+        }
+
+        .error {
+            background: #fdeded;
+            color: #5c1c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Logout link */
+        .logout-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #a21caf;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .logout-link:hover {
+            color: #8e1a9b;
+            text-decoration: underline;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: #ffffff;
+                margin: 0;
+            }
+
+            .dashboard-container {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            .tabs, .add-button, .action-button, .modal, .message, .logout-link {
+                display: none;
+            }
+
+            .tab-content.active {
+                display: block !important;
+            }
+
+            table {
+                font-size: 0.7rem;
+            }
+
+            th, td {
+                border: 1px solid #000;
+                padding: 4px 6px;
+            }
+
+            th {
+                background: #f0f0f0;
+                color: #000;
+            }
+
+            tr, tr:nth-child(even), tr:hover {
+                background: none;
+                transform: none;
+                box-shadow: none;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .dashboard-container {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.7rem;
+            }
+
+            th, td {
+                padding: 5px 6px;
+            }
+
+            .add-button {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.65rem;
+            }
+
+            th, td {
+                padding: 4px 5px;
+            }
+
+            .add-button {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+
+            .modal-content {
+                padding: 16px;
+                max-width: 90%;
+            }
+        }
+    </style>
+    <script>
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`[onclick="openTab('${tabName}')"]`).classList.add('active');
+        }
+
+        function openModal(modalId, formData = null) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            if (formData) {
+                Object.keys(formData).forEach(key => {
+                    const input = modal.querySelector(`[name="${key}"]`);
+                    if (input) input.value = formData[key];
+                });
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.querySelector(`#${modalId} form`).reset();
+        }
+
+        // Add event listeners for Edit buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            // Events tab Edit buttons
+            document.querySelectorAll('.edit-event-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const formData = {
+                        'event-name': button.getAttribute('data-event-name'),
+                        'event-college': button.getAttribute('data-event-college'),
+                        'event-date': button.getAttribute('data-event-date'),
+                        'event-description': button.getAttribute('data-event-description'),
+                        'event_id': button.getAttribute('data-event-id')
+                    };
+                    openModal('editEventModal', formData);
+                });
+            });
+
+            // SBO Officers tab Edit buttons
+            document.querySelectorAll('.edit-officer-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const formData = {
+                        'officer-username': button.getAttribute('data-officer-username'),
+                        'officer-college': button.getAttribute('data-officer-college'),
+                        'officer_id': button.getAttribute('data-officer-id')
+                    };
+                    openModal('editOfficerModal', formData);
+                });
+            });
+
+            // Students tab Edit buttons
+            document.querySelectorAll('.edit-student-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const formData = {
+                        'student-name': button.getAttribute('data-student-name'),
+                        'student-id_number': button.getAttribute('data-student-id_number'),
+                        'student-college': button.getAttribute('data-student-college'),
+                        'student-course': button.getAttribute('data-student-course'),
+                        'student-school_year': button.getAttribute('data-student-school_year'),
+                        'student_id': button.getAttribute('data-student-id')
+                    };
+                    openModal('editStudentModal', formData);
+                });
+            });
+        });
+
+        window.onload = () => openTab('events');
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Superuser Dashboard</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="tabs">
+            <button class="tab-button" onclick="openTab('events')">Events</button>
+            <button class="tab-button" onclick="openTab('officers')">SBO Officers</button>
+            <button class="tab-button" onclick="openTab('students')">Students</button>
+            <button class="tab-button" onclick="openTab('attendance')">Attendance Logs</button>
+        </div>
+
+        <!-- Events Tab -->
+        <div id="events" class="tab-content">
+            <button class="add-button" onclick="openModal('addEventModal')">Add Event</button>
+            {% if events %}
+                <div class="table-container">
+                    <table class="event-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>College</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in events %}
+                                <tr>
+                                    <td>{{ event.name }}</td>
+                                    <td>{{ event.college.name }}</td>
+                                    <td>{{ event.date|date:"Y-m-d" }}</td>
+                                    <td>
+                                        <button class="action-button edit-button edit-event-button"
+                                                data-event-name="{{ event.name|escapejs }}"
+                                                data-event-college="{{ event.college.id }}"
+                                                data-event-date="{{ event.date|date:'Y-m-d' }}"
+                                                data-event-description="{{ event.description|escapejs }}"
+                                                data-event-id="{{ event.id }}">Edit</button>
+                                        <form action="{% url 'delete_event' event.id %}" method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="action-button delete-button" onclick="return confirm('Are you sure you want to delete this event?');">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: #1a1a1a; font-size: 0.75rem;">No events found.</p>
+            {% endif %}
+        </div>
+
+        <!-- SBO Officers Tab -->
+        <div id="officers" class="tab-content">
+            <button class="add-button" onclick="openModal('addOfficerModal')">Add SBO Officer</button>
+            {% if officers %}
+                <div class="table-container">
+                    <table class="officer-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>College</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for officer in officers %}
+                                <tr>
+                                    <td>{{ officer.username }}</td>
+                                    <td>{{ officer.college.name }}</td>
+                                    <td>
+                                        <button class="action-button edit-button edit-officer-button"
+                                                data-officer-username="{{ officer.username|escapejs }}"
+                                                data-officer-college="{{ officer.college.id }}"
+                                                data-officer-id="{{ officer.id }}">Edit</button>
+                                        <form action="{% url 'delete_officer' officer.id %}" method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="action-button delete-button" onclick="return confirm('Are you sure you want to delete this officer?');">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: #1a1a1a; font-size: 0.75rem;">No SBO officers found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Students Tab -->
+        <div id="students" class="tab-content">
+            <button class="add-button" onclick="openModal('addStudentModal')">Add Student</button>
+            {% if students %}
+                <div class="table-container">
+                    <table class="student-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>ID Number</th>
+                                <th>College</th>
+                                <th>Course</th>
+                                <th>School Year</th>
+                                <th>Picture</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                                <tr>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.id_number }}</td>
+                                    <td>{{ student.college.name }}</td>
+                                    <td>{{ student.course }}</td>
+                                    <td>{{ student.school_year }}</td>
+                                    <td>
+                                        {% if student.picture %}
+                                            <img src="{{ student.picture.url }}" alt="{{ student.name|escapejs }}" style="width: 50px; height: auto; border-radius: 4px;">
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="action-button edit-button edit-student-button"
+                                                data-student-name="{{ student.name|escapejs }}"
+                                                data-student-id_number="{{ student.id_number|escapejs }}"
+                                                data-student-college="{{ student.college.id }}"
+                                                data-student-course="{{ student.course|escapejs }}"
+                                                data-student-school_year="{{ student.school_year|escapejs }}"
+                                                data-student-id="{{ student.id }}">Edit</button>
+                                        <form action="{% url 'delete_student' student.id %}" method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="action-button delete-button" onclick="return confirm('Are you sure you want to delete this student?');">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: #1a1a1a; font-size: 0.75rem;">No students found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Attendance Logs Tab -->
+        <div id="attendance" class="tab-content">
+            {% if attendance_logs %}
+                <div class="table-container">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Event</th>
+                                <th>AM Sign In</th>
+                                <th>AM Sign Out</th>
+                                <th>PM Sign In</th>
+                                <th>PM Sign Out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in attendance_logs %}
+                                <tr>
+                                    <td>{{ log.student.name }}</td>
+                                    <td>{{ log.event.name }}</td>
+                                    <td>{{ log.am_sign_in_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                                    <td>{{ log.am_sign_out_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                                    <td>{{ log.pm_sign_in_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                                    <td>{{ log.pm_sign_out_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: #1a1a1a; font-size: 0.75rem;">No attendance logs found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Modals -->
+        <!-- Add Event Modal -->
+        <div id="addEventModal" class="modal">
+            <div class="modal-content">
+                <h2>Add Event</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ event_form.as_p }}
+                    <input type="hidden" name="event_submit" value="1">
+                    <button type="submit">Save</button>
+                    <button type="button" class="close-button" onclick="closeModal('addEventModal')">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Event Modal -->
+        <div id="editEventModal" class="modal">
+            <div class="modal-content">
+                <h2>Edit Event</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ event_form.as_p }}
+                    <input type="hidden" name="event_edit" value="1">
+                    <input type="hidden" name="event_id">
+                    <button type="submit">Update</button>
+                    <button type="button" class="close-button" onclick="closeModal('editEventModal')">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Officer Modal -->
+        <div id="addOfficerModal" class="modal">
+            <div class="modal-content">
+                <h2>Add SBO Officer</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ officer_form.as_p }}
+                    <input type="hidden" name="officer_submit" value="1">
+                    <button type="submit">Save</button>
+                    <button type="button" class="close-button" onclick="closeModal('addOfficerModal')">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Officer Modal -->
+        <div id="editOfficerModal" class="modal">
+            <div class="modal-content">
+                <h2>Edit SBO Officer</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ officer_form.as_p }}
+                    <input type="hidden" name="officer_edit" value="1">
+                    <input type="hidden" name="officer_id">
+                    <button type="submit">Update</button>
+                    <button type="button" class="close-button" onclick="closeModal('editOfficerModal')">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Student Modal -->
+        <div id="addStudentModal" class="modal">
+            <div class="modal-content">
+                <h2>Add Student</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ student_form.as_p }}
+                    <input type="hidden" name="student_submit" value="1">
+                    <button type="submit">Save</button>
+                    <button type="button" class="close-button" onclick="closeModal('addStudentModal')">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Student Modal -->
+        <div id="editStudentModal" class="modal">
+            <div class="modal-content">
+                <h2>Edit Student</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ student_form.as_p }}
+                    <input type="hidden" name="student_edit" value="1">
+                    <input type="hidden" name="student_id">
+                    <button type="submit">Update</button>
+                    <button type="button" class="close-button" onclick="closeModal('editStudentModal')">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <a href="{% url 'sbo_logout' %}" class="logout-link">Logout</a>
+    </div>
+</body>
+</html>
