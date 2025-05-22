@@ -91,15 +91,15 @@
 
         /* Adjusted column widths */
         .attendance-table th:nth-child(1),
-        .attendance-table td:nth-child(1) { width: 250px; } /* Name + Event (increased to fit event name) */
+        .attendance-table td:nth-child(1) { width: 250px; } /* Name + Event */
         .attendance-table th:nth-child(2),
-        .attendance-table td:nth-child(2) { width: 90px; } /* AM Sign In (slightly reduced) */
+        .attendance-table td:nth-child(2) { width: 90px; } /* AM Sign In */
         .attendance-table th:nth-child(3),
-        .attendance-table td:nth-child(3) { width: 90px; } /* AM Sign Out (slightly reduced) */
+        .attendance-table td:nth-child(3) { width: 90px; } /* AM Sign Out */
         .attendance-table th:nth-child(4),
-        .attendance-table td:nth-child(4) { width: 90px; } /* PM Sign In (slightly reduced) */
+        .attendance-table td:nth-child(4) { width: 90px; } /* PM Sign In */
         .attendance-table th:nth-child(5),
-        .attendance-table td:nth-child(5) { width: 90px; } /* PM Sign Out (slightly reduced) */
+        .attendance-table td:nth-child(5) { width: 90px; } /* PM Sign Out */
 
         .attendance-table th {
             background: linear-gradient(135deg, #a21caf 0%, #cd2dd3 100%);
@@ -191,14 +191,14 @@
             position: absolute;
             top: 16px;
             right: 16px;
-            padding: 4px 8px; /* Reduced padding for smaller size */
-            font-size: 0.7rem; /* Smaller font size */
+            padding: 4px 8px;
+            font-size: 0.7rem;
             font-weight: 500;
             cursor: pointer;
             background-color: #a21caf;
             color: #ffffff;
             border: none;
-            border-radius: 4px; /* Slightly reduced for a more rectangular look */
+            border-radius: 4px;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
@@ -331,13 +331,6 @@
                 max-width: 100%;
             }
 
-            PUC {
-                box-shadow: none;
-                padding: 0;
-                width: 100%;
-                max-width: 100%;
-            }
-
             .attendance-table {
                 font-size: 0.7rem;
                 box-shadow: none;
@@ -458,7 +451,6 @@
             </form>
 
             <div class="links">
-                <a href="{% url 'student_registration' %}">Register a Student</a>
                 <a href="{% url 'sbo_logout' %}">Logout</a>
             </div>
         </div>
