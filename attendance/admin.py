@@ -48,7 +48,7 @@ class EventAdmin(admin.ModelAdmin):
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
     list_display = ['student', 'event', 'am_sign_in_time', 'am_sign_out_time','pm_sign_in_time','pm_sign_out_time', 'created_at']
-    list_filter = ['event', 'sign_in_time', 'sign_out_time', 'created_at']
+    list_filter = ['event', 'student']
     search_fields = ['student__name', 'event__name']
     list_per_page = 25
 

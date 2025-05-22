@@ -5,20 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Attendance</title>
     <style>
-        /* Use a modern, clean font stack and improve base styling */
+        /* Modern font stack and base styling */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #a21caf 0%, #cd2dd3 100%);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        .container {
+        /* Two-column layout */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 24px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Form container (left) */
+        .form-container {
             background-color: #ffffff;
             padding: 32px;
             border-radius: 12px;
@@ -29,18 +40,164 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .container:hover {
+        .form-container:hover {
             transform: translateY(-4px);
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
         }
 
+        /* Log container (right) */
+        .log-container {
+            background-color: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 700px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .log-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Compact table styling */
+        .attendance-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.75rem;
+            margin-top: 16px;
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            table-layout: fixed;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Column widths */
+        .attendance-table th:nth-child(1),
+        .attendance-table td:nth-child(1) { width: 200px; } /* Name */
+        .attendance-table th:nth-child(2),
+        .attendance-table td:nth-child(2) { width: 100px; } /* AM Sign In */
+        .attendance-table th:nth-child(3),
+        .attendance-table td:nth-child(3) { width: 100px; } /* AM Sign Out */
+        .attendance-table th:nth-child(4),
+        .attendance-table td:nth-child(4) { width: 100px; } /* PM Sign In */
+        .attendance-table th:nth-child(5),
+        .attendance-table td:nth-child(5) { width: 100px; } /* PM Sign Out */
+
+        .attendance-table th {
+            background: linear-gradient(135deg, #a21caf 0%, #cd2dd3 100%);
+            color: #ffffff;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .attendance-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .attendance-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        .attendance-table tr {
+            background-color: #ffffff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .attendance-table tr:nth-child(even) {
+            background: linear-gradient(135deg, #f9f5ff 0%, #f3eaff 100%);
+        }
+
+        .attendance-table tr:hover {
+            background: linear-gradient(135deg, #ede9fe 0%, #e0d7ff 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .attendance-table td {
+            color: #1a1a1a;
+        }
+
+        /* Custom scrollbar */
+        .attendance-table::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .attendance-table::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .attendance-table::-webkit-scrollbar-thumb {
+            background: #a21caf;
+            border-radius: 4px;
+        }
+
+        .attendance-table::-webkit-scrollbar-thumb:hover {
+            background: #8e1a9b;
+        }
+
+        /* Typography */
         h2 {
             color: #1a1a1a;
             font-size: 1.75rem;
             font-weight: 600;
             margin-bottom: 24px;
+            position: relative;
         }
 
+        h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: #a21caf;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Print button */
+        .print-button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: #a21caf;
+            color: #ffffff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .print-button:hover {
+            background-color: #8e1a9b;
+            transform: scale(1.02);
+        }
+
+        /* Message styling */
         .message {
             margin: 12px 0;
             padding: 12px;
@@ -73,6 +230,7 @@
             border-left: 4px solid #dc3545;
         }
 
+        /* Form elements */
         label {
             display: block;
             margin: 12px 0 6px;
@@ -138,51 +296,193 @@
             justify-content: center;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
+        /* Print-specific styles */
+        @media print {
+            body {
+                background: #ffffff;
+                margin: 0;
+            }
+
+            .main-container {
+                display: block;
+            }
+
+            .form-container,
+            .print-button,
+            .links,
+            .message {
+                display: none;
+            }
+
+            .log-container {
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
                 max-width: 100%;
             }
 
-            button {
+            PUC {
+                box-shadow: none;
+                padding: 0;
                 width: 100%;
+                max-width: 100%;
+            }
+
+            .attendance-table {
+                font-size: 0.7rem;
+                box-shadow: none;
+                overflow: hidden;
+                max-height: none;
+                width: 100%;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                padding: 4px 6px;
+                border: 1px solid #000;
+            }
+
+            .attendance-table th {
+                background: #f0f0f0;
+                color: #000;
+            }
+
+            .attendance-table tr,
+            .attendance-table tr:nth-child(even),
+            .attendance-table tr:hover {
+                background: none;
+                transform: none;
+                box-shadow: none;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            h2::after {
+                display: none;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .form-container,
+            .log-container {
+                max-width: 100%;
+            }
+
+            .attendance-table {
+                font-size: 0.7rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                padding: 5px 6px;
+            }
+
+            .print-button {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-container,
+            .log-container {
+                padding: 20px;
             }
 
             h2 {
                 font-size: 1.5rem;
             }
+
+            .attendance-table {
+                font-size: 0.65rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                padding: 4px 5px;
+            }
+
+            .print-button {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2> Event Attendance</h2>
+    <div class="main-container">
+        <!-- Form Section (Left) -->
+        <div class="form-container">
+            <h2>Event Attendance</h2>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message {% if message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}error{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {% if message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}error{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-        <form method="POST">
-            {% csrf_token %}
-            <label for="id_event">Select Event</label>
-            {{ form.event }}
+            <form method="POST">
+                {% csrf_token %}
+                <label for="id_event">Select Event</label>
+                {{ form.event }}
 
-            <label for="id_id_number">ID Number</label>
-            {{ form.id_number }}
+                <label for="id_id_number">ID Number</label>
+                {{ form.id_number }}
 
-            <label for="id_action">Action</label>
-            {{ form.action }}
+                <label for="id_action">Action</label>
+                {{ form.action }}
 
-            <button type="submit">Submit</button>
-        </form>
+                <button type="submit">Submit</button>
+            </form>
 
-        <div class="links">
-            <a href="{% url 'student_registration' %}">Register a Student</a>
-            <a href="{% url 'sbo_logout' %}">Logout</a>
+            <div class="links">
+                <a href="{% url 'student_registration' %}">Register a Student</a>
+                <a href="{% url 'sbo_logout' %}">Logout</a>
+            </div>
+        </div>
+
+        <!-- Attendance Log Section (Right) -->
+        <div class="log-container">
+            <h2>Attendance Log{% if selected_event %} for {{ selected_event }}{% endif %}</h2>
+            <button class="print-button" onclick="window.print()">Print Attendance Log</button>
+            {% if attendance_logs %}
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>AM Sign In</th>
+                            <th>AM Sign Out</th>
+                            <th>PM Sign In</th>
+                            <th>PM Sign Out</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in attendance_logs %}
+                            <tr>
+                                <td>{{ log.student.name }}</td>
+                                <td>{{ log.am_sign_in_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                                <td>{{ log.am_sign_out_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                                <td>{{ log.pm_sign_in_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                                <td>{{ log.pm_sign_out_time|date:"Y-m-d H:i"|default:"-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: #1a1a1a; font-size: 0.75rem;">No attendance records found.</p>
+            {% endif %}
         </div>
     </div>
 </body>

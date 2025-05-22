@@ -28,14 +28,15 @@ def sbo_logout(request):
 def attendance_form(request):
     officer = request.user
     events = Event.objects.filter(college=officer.college)
-    form = AttendanceForm(event_queryset=events)
+    form = AttendanceForm(request.POST or None, event_queryset=events)
+    selected_event = None
 
     if request.method == 'POST':
-        form = AttendanceForm(request.POST, event_queryset=events)
         if form.is_valid():
             id_number = form.cleaned_data['id_number']
             event = form.cleaned_data['event']
             action = form.cleaned_data['action']
+            selected_event = event.name  # Store event name for template
 
             try:
                 student = Student.objects.get(id_number=id_number, college=officer.college)
@@ -110,7 +111,14 @@ def attendance_form(request):
                     existing_attendance.save()
                     messages.success(request, f"{student.name} signed out for PM successfully!")
 
-    return render(request, 'attendance/attendance_form.html', {'form': form})
+    # Fetch attendance records for the officer's college
+    attendance_logs = Attendance.objects.filter(event__college=officer.college).select_related('student', 'event').order_by('-created_at')
+
+    return render(request, 'attendance/attendance_form.html', {
+        'form': form,
+        'attendance_logs': attendance_logs,
+        'selected_event': selected_event
+    })
 
 def student_registration(request):
     if request.method == 'POST':
@@ -124,4 +132,3 @@ def student_registration(request):
     else:
         form = StudentRegistrationForm()
     return render(request, 'attendance/student_registration.html', {'form': form})
-
